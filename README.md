@@ -13,7 +13,7 @@ reported for bovine pancreatic trypsin inhibitor (BPTI).
 Each of these directories contains a separate README describing the necessary
 steps.
 The _grand_ module required to run these simulations can be downloaded from
-_*ADD LINK*_.
+[here](https://github.com/essex-lab/grand).
 
 If you encounter any problems with these scripts, please contact the authors to
 discuss.
