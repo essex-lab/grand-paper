@@ -3,9 +3,9 @@
 This directory contains the scripts needed to carry out the density analysis
 of water using both GCMC/MD and NPT, as reported.
 This directory contains the PDB file of the initial water structure 
-(`water_box-eq2.pdb`), with a density of 1.004 g/mL.
+(`water_box-eq.pdb`), with a density of 1.004 g/mL.
 The structure used for the simulation shown in the Supporting Information is
-`water_box-eq.pdb` - the density of this structure is 0.978 g/mL
+`water_box-eq2.pdb` - the density of this structure is 0.978 g/mL
 
 ## Directory Structure
 
@@ -14,10 +14,10 @@ The directories here are arranged as follows:
 - `npt-md` : Directory for the NPT simulations
 - `gcmc-md` : Directory for the GCMC/MD simulations
     - `sim-params` : GCMC/MD simulations using the calculated values for the excess
-    chemical potential and standard state volume (-6.09 kcal/mol and 30.345 A^3,
+    chemical potential and standard state volume (-6.09 kcal/mol and 30.345 Angstroms<sup>3</sup>,
     respectively)
     - `exp-params` : GCMC/MD simulations using the experimental values for the excess
-    chemical potential and standard state volume (-6.30 kcal/mol and 30.000 A^3,
+    chemical potential and standard state volume (-6.30 kcal/mol and 30.000 Angstroms<sup>3</sup>,
     respectively)
 
 ## Simulation
