@@ -2,10 +2,7 @@
 run.py
 Marley Samways
 
-This script is to run GCMC/MD on a simulation box of pure water, sampling the entire system.
-This is not how GCMC/MD would normally be run, but this is done in order to assess whether
-the system will sample the correct density, where fluctuations in density arise from changes
-in the number of particles as the volume is held constant
+This script is to run GCMC/MD to equilibrate a water box with a high density
 """
 
 import numpy as np
@@ -53,8 +50,8 @@ for f in range(system.getNumForces()):
 gcmc_mover = grand.samplers.StandardGCMCSystemSampler(system=system,
                                                       topology=pdb.topology,
                                                       temperature=298*kelvin,
-                                                      excessChemicalPotential=-6.324*kilocalorie_per_mole,
-                                                      standardVolume=30.003*angstroms**3,
+                                                      excessChemicalPotential=-6.09*kilocalorie_per_mole,
+                                                      standardVolume=30.345*angstroms**3,
                                                       boxVectors=np.array(pdb.topology.getPeriodicBoxVectors()),
                                                       log='density-1.log',
                                                       ghostFile='ghosts-1.txt',
@@ -77,14 +74,13 @@ simulation.context.setPeriodicBoxVectors(*pdb.topology.getPeriodicBoxVectors())
 # Initialise the Sampler
 gcmc_mover.initialise(simulation.context, ghosts)
 
-# Run simulation - want to run 50M GCMC moves total, walltime may limit this, so we write checkpoints
-while gcmc_mover.n_moves < 50000000:
+# Run simulation - want to run 12.5M GCMC moves total, walltime may limit this, so we write checkpoints
+while gcmc_mover.n_moves < 12500000:
     # Carry out 125 GCMC moves per 250 fs of MD
     simulation.step(125)
     gcmc_mover.move(simulation.context, 125)
     
-    # Write data out every 0.5 ns
-    if gcmc_mover.n_moves % 250000 == 0:
+    # Write data out every 0.1 ns
+    if gcmc_mover.n_moves % 50000 == 0:
         gcmc_mover.report(simulation)
-    
 

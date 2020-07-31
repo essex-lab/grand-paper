@@ -6,9 +6,9 @@ from matplotlib import gridspec
 
 
 # Set font sizes for the graph
-small_font = 10
-medium_font = 12
-large_font = 14
+small_font = 16
+medium_font = 18
+large_font = 20
 
 plt.rc('figure', titlesize=large_font)
 plt.rc('font', size=small_font)
@@ -69,7 +69,7 @@ def read_csv(filename):
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--npt', default=None, help='CSV containing densities from NPT simulation')
-parser.add_argument('--uvt', default=None, help='CSV containing densities from GCMC/MD simulation')
+parser.add_argument('--uvt', default=None, help='CSV containing densities from GCMD simulation')
 parser.add_argument('--xlim', default=None, type=float, help='Max value for the x axis')
 parser.add_argument('--ylims', default=None, type=float, nargs='+', help='Min and max values for the y axis')
 parser.add_argument('-o', '--output', default='fig.pdf', help='Name of the output file')
@@ -84,7 +84,7 @@ if args.npt is not None:
     npt_std_dev = np.std(npt_densities)
     print('NPT density = {:.6f} g/mL (SD = {:.6f} g/mL)'.format(np.round(npt_mean, 6), np.round(npt_std_dev, 6)))
 
-# Read in GCMC/MD densities
+# Read in GCMD densities
 if args.uvt is not None:
     # Read file
     uvt_times, uvt_means, uvt_errors, uvt_densities = read_csv(args.uvt)
@@ -99,6 +99,9 @@ gs = gridspec.GridSpec(1, 2, width_ratios=[3, 1])
 ax1 = fig.add_subplot(gs[0])
 ax2 = fig.add_subplot(gs[1])
 
+# Use the same bin width for all histograms
+bin_width = 0.002
+
 # Plot NPT data
 if args.npt is not None:
     # Plot density vs time
@@ -107,8 +110,9 @@ if args.npt is not None:
     ax1.fill_between(npt_times, npt_means-npt_errors, npt_means+npt_errors, lw=0, color='blue', alpha=0.3)
 
     # Plot density histogram
-    ax2.hist(npt_densities, bins='auto', color='blue', density=True, orientation='horizontal', histtype='stepfilled', alpha=0.3, lw=0)
-    ax2.hist(npt_densities, bins='auto', color='blue', density=True, orientation='horizontal', histtype='step', alpha=1.0, lw=1.5)
+    bins_npt = np.arange(min(npt_densities), max(npt_densities)+bin_width, bin_width)
+    ax2.hist(npt_densities, bins=bins_npt, color='blue', density=True, orientation='horizontal', histtype='stepfilled', alpha=0.3, lw=0)
+    ax2.hist(npt_densities, bins=bins_npt, color='blue', density=True, orientation='horizontal', histtype='step', alpha=1.0, lw=1.5)
 
 # Plot uVT data
 if args.uvt is not None:
@@ -118,8 +122,9 @@ if args.uvt is not None:
     ax1.fill_between(uvt_times, uvt_means-uvt_errors, uvt_means+uvt_errors, lw=0, color='red', alpha=0.3)
     
     # Plot density histogram
-    ax2.hist(uvt_densities, bins='auto', color='red', density=True, orientation='horizontal', histtype='stepfilled', alpha=0.3, lw=0)
-    ax2.hist(uvt_densities, bins='auto', color='red', density=True, orientation='horizontal', histtype='step', alpha=1.0, lw=1.5)
+    bins_uvt = np.arange(min(uvt_densities), max(uvt_densities)+bin_width, bin_width)
+    ax2.hist(uvt_densities, bins=bins_uvt, color='red', density=True, orientation='horizontal', histtype='stepfilled', alpha=0.3, lw=0)
+    ax2.hist(uvt_densities, bins=bins_uvt, color='red', density=True, orientation='horizontal', histtype='step', alpha=1.0, lw=1.5)
 
 # Set upper x-limit
 if args.xlim is not None:
@@ -131,6 +136,8 @@ else:
 if args.ylims is not None:
     ax1.set_ylim(args.ylims[0], args.ylims[1])
     ax2.set_ylim(args.ylims[0], args.ylims[1])
+else:
+    ax1.set_ylim(ax2.get_ylim())
 
 ax2.set_xticks([])
 ax2.set_yticks([])

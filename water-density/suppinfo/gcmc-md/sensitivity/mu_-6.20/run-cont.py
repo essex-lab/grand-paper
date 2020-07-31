@@ -2,10 +2,8 @@
 run-cont.py
 Marley Samways
 
-This script is to run GCMC/MD on a simulation box of pure water, sampling the entire system.
-This is not how GCMC/MD would normally be run, but this is done in order to assess whether
-the system will sample the correct density, where fluctuations in density arise from changes
-in the number of particles as the volume is held constant.
+This script is to run GCMC/MD using a slightly different value of the excess
+chemical potential, to test its effect on the water density.
 
 This script is intended to continue a stopped simulation
 """
@@ -39,6 +37,7 @@ args = parser.parse_args()
 
 # Loading some old variables
 n_moves, n_accepted = read_moves('density-{}.log'.format(args.run-1))
+start_time = (n_moves * 2 * femtoseconds).in_units_of(nanoseconds)
 ghosts = grand.utils.read_ghosts_from_file('ghosts-{}.txt'.format(args.run-1))[-1]
 
 # Load in the .pdb water box (including ghosts) to get the topology
@@ -66,8 +65,8 @@ for f in range(system.getNumForces()):
 gcmc_mover = grand.samplers.StandardGCMCSystemSampler(system=system,
                                                       topology=pdb.topology,
                                                       temperature=298*kelvin,
-                                                      excessChemicalPotential=-6.324*kilocalorie_per_mole,
-                                                      standardVolume=30.003*angstroms**3,
+                                                      excessChemicalPotential=-6.20*kilocalorie_per_mole,
+                                                      standardVolume=30.345*angstroms**3,
                                                       boxVectors=np.array(pdb.topology.getPeriodicBoxVectors()),
                                                       log='density-{}.log'.format(args.run),
                                                       ghostFile='ghosts-{}.txt'.format(args.run),
@@ -93,14 +92,13 @@ gcmc_mover.initialise(simulation.context, ghosts)
 gcmc_mover.n_moves = n_moves
 gcmc_mover.n_accepted = n_accepted
 
-# Run simulation - want to run 50M GCMC moves total, walltime may limit this, so we write checkpoints
-while gcmc_mover.n_moves < 50000000:
+# Run simulation - want to run 12.5M GCMC moves total, walltime may limit this, so we write checkpoints
+while gcmc_mover.n_moves < 12500000:
     # Carry out 125 GCMC moves per 250 fs of MD
     simulation.step(125)
     gcmc_mover.move(simulation.context, 125)
     
-    # Write data out every 0.5 ns
-    if gcmc_mover.n_moves % 250000 == 0:
+    # Write data out every 0.1 ns
+    if gcmc_mover.n_moves % 50000 == 0:
         gcmc_mover.report(simulation)
-    
 

@@ -4,8 +4,6 @@ This directory contains the scripts needed to carry out the density analysis
 of water using both GCMC/MD and NPT, as reported.
 This directory contains the PDB file of the initial water structure 
 (`water_box-eq.pdb`), with a density of 1.004 g/mL.
-The structure used for the simulation shown in the Supporting Information is
-`water_box-eq2.pdb` - the density of this structure is 0.978 g/mL
 
 ## Directory Structure
 
@@ -17,8 +15,9 @@ The directories here are arranged as follows:
     chemical potential and standard state volume (-6.09 kcal/mol and 30.345 Angstroms<sup>3</sup>,
     respectively)
     - `exp-params` : GCMC/MD simulations using the experimental values for the excess
-    chemical potential and standard state volume (-6.30 kcal/mol and 30.000 Angstroms<sup>3</sup>,
+    chemical potential and standard state volume (-6.324 kcal/mol and 30.003 Angstroms<sup>3</sup>,
     respectively)
+- `suppinfo` : Directory containing the shorter simulations presented in the Supporting Information
 
 ## Simulation
 
@@ -37,9 +36,8 @@ To run GCMC/MD, using the calculated parameters, run the following:
 cd gcmc-md/sim-params
 mkdir run1
 cd run1
-python ../run.py -pdb ../../../water_box-eq2.pdb
+python ../run.py -pdb ../../../water_box-eq.pdb
 ```
-The same can also be done with `../../../water_box-eq.pdb`, as presented in the SI.
 This simulation is very slow (given the unusually high frequency of GCMC
 moves, owing to the large system size), so the simulation may need to be 
 restarted several times:
@@ -55,7 +53,7 @@ Similarly, for the simulation using the experimental parameters:
 cd gcmc-md/exp-params
 mkdir run1
 cd run1
-python ../run.py -pdb ../../../water_box-eq2.pdb
+python ../run.py -pdb ../../../water_box-eq.pdb
 python ../run-cont.py -r 2
 python ../run-cont.py -r 3
 ```
